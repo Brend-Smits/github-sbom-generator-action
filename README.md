@@ -1,4 +1,4 @@
-# Retrieve GitHub SBOMs
+# Retrieve GitHub SBOM(s) Action
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
@@ -10,7 +10,7 @@ To use this composite action in your workflow, you can include the following ste
 
 ```yaml
 - name: Retrieve GitHub SBOMs
-  uses: brend-smits/retrieve-github-sboms@<tag-or-branch>
+  uses: brend-smits/retrieve-github-sbom-action@<tag-or-branch>
   with:
     repoListPath: <path-to-repo-list-file>
     saveDirectoryPath: <path-to-save-directory>
@@ -48,7 +48,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Retrieve GitHub SBOMs
-      uses: brend-smits/retrieve-github-sboms@main
+      uses: brend-smits/retrieve-github-sbom-action@main
       with:
         repoListPath: gh-repos.txt
         saveDirectoryPath: sboms
