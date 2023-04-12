@@ -17,12 +17,8 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Checkout this repo
-      uses: actions/checkout@v3
-      with:
-        repository: 'brend-smits/retrieve-github-sbom-action'
     - name: Run Action
       shell: bash
       run: |
-        chmod +x get-sboms.sh
-        ./get-sboms.sh -r "${{ inputs.repo_list_path }}" -f "${{ inputs.save_directory_path }}" -t ${{ inputs.github_token }} -d ${{ inputs.debug }}
+        chmod +x ${{ github.action_path }}/get-sboms.sh
+        .${{ github.action_path }}/get-sboms.sh -r "${{ inputs.repo_list_path }}" -f "${{ inputs.save_directory_path }}" -t ${{ inputs.github_token }} -d ${{ inputs.debug }}
