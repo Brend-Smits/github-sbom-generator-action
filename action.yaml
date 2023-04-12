@@ -17,6 +17,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Checkout this repo
+      uses: actions/checkout@v3
+      with:
+        repository: 'brend-smits/retrieve-github-sbom-action'
     - name: Run Action
       shell: bash
       run: |
