@@ -21,4 +21,4 @@ runs:
       shell: bash
       run: |
         chmod +x get-sboms.sh
-        ./get-sboms.sh -r ${{ inputs.repo_list_path }} -f ${{ inputs.save_directory_path }} -t ${{ inputs.github_token }} -d ${{ inputs.debug }}
+        ./get-sboms.sh -r "${{ inputs.repo_list_path }}" -f "${{ inputs.save_directory_path }}" -t ${{ inputs.github_token }} -d ${{ inputs.debug }}

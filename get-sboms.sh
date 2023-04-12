@@ -39,6 +39,14 @@ if [ -z "$token" ]; then
     exit 1
 fi
 
+# Check if repoListPath directory and file exist and are not empty
+# if [ ! -d "$repoListPath" ] || [ ! -s "$repoListPath" ]; then
+#     echo "=== Repository List Path does not exist or is empty. Exiting gracefully ==="
+#     exit 0
+# fi
+
+# echo $repoListPath
+
 # Function to call GitHub API and retrieve SBOM for a repository
 get_sbom() {
   local repo_name=$1
