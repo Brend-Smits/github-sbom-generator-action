@@ -1,0 +1,16 @@
+name: Test Retrieve SBOMs Action
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run Retrieve SBOM Action
+      uses: ./
+      with:
+        repo_list_path: ./.github/lib/test-data.txt
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        debug: true
+        save_directory_path: ./.github/lib/test-output/

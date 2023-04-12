@@ -1,0 +1,24 @@
+name: Retrieve SBOMs Action
+description: A composite action that retrieves SBOMs from GitHub
+inputs:
+  repo_list_path:
+    description: 'Path to the repository list file'
+    required: true
+  github_token:
+    description: 'GitHub token for authentication'
+    required: true
+  debug:
+    description: 'Enable debug mode'
+    required: false
+    default: 'false'
+  save_directory_path:
+    description: 'Path to the directory to save files'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Action
+      shell: bash
+      run: |
+        chmod +x get-sboms.sh
+        ./get-sboms.sh -r ${{ inputs.repo_list_path }} -f ${{ inputs.save_directory_path }} -t ${{ inputs.github_token }} -d ${{ inputs.debug }}
