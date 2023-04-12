@@ -53,9 +53,23 @@ jobs:
         repo_list_path: gh-repos.txt
         save_directory_path: sboms
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload all sboms
+        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce
+        with:
+          name: all-repos-sboms
+          path: sboms
 ```
 
 This workflow retrieves SBOMs for repositories listed in the `gh-repos.txt` file and saves them to a `sboms` directory.
+
+## Usecases
+
+Having the ability to retrieve all SBOMs from an organization in e.g. a central repository allows you to do all sorts of fun things like:
+    - License checking
+    - Metrics
+    - Security checks
+    - Compliancy checks with [Continuous Compliance](https://github.com/philips-labs/continuous-compliance-action)
 
 ## State
 
