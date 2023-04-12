@@ -1,5 +1,8 @@
 name: Retrieve SBOMs Action
 description: A composite action that retrieves SBOMs from GitHub
+branding:
+  icon: activity
+  color: orange
 inputs:
   repo_list_path:
     description: 'Path to the repository list file'
