@@ -12,9 +12,9 @@ To use this composite action in your workflow, you can include the following ste
 - name: Retrieve GitHub SBOMs
   uses: brend-smits/retrieve-github-sbom-action@<tag-or-branch>
   with:
-    repoListPath: <path-to-repo-list-file>
-    saveDirectoryPath: <path-to-save-directory>
-    token: ${{ secrets.GITHUB_TOKEN }}
+    repo_list_path: <path-to-repo-list-file>
+    save_directory_path: <path-to-save-directory>
+    github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 Replace `<tag-or-branch>` with the specific tag or branch of the composite action that you want to use, `<path-to-repo-list-file>` with the path to a file containing a list of repository names, and `<path-to-save-directory>` with the path to the directory where you want to save the retrieved SBOMs. Also, make sure to provide the `GITHUB_TOKEN` secret in your workflow to authenticate with the GitHub API.
@@ -50,9 +50,9 @@ jobs:
     - name: Retrieve GitHub SBOMs
       uses: brend-smits/retrieve-github-sbom-action@main
       with:
-        repoListPath: gh-repos.txt
-        saveDirectoryPath: sboms
-        token: ${{ secrets.GITHUB_TOKEN }}
+        repo_list_path: gh-repos.txt
+        save_directory_path: sboms
+        github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 This workflow retrieves SBOMs for repositories listed in the `gh-repos.txt` file and saves them to a `sboms` directory.
