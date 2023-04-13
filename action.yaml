@@ -1,4 +1,4 @@
-name: Retrieve SBOMs Action
+name: Retrieve GitHub SBOM Action
 description: A composite action that retrieves SBOMs from GitHub
 branding:
   icon: activity
