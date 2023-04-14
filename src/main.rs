@@ -1,3 +1,6 @@
+use std::fs::File;
+use std::io::{BufRead, BufReader};
+
 use clap::Parser;
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
 
@@ -15,10 +18,30 @@ struct Cli {
     token: String,
 }
 
-fn main() {
+#[derive(Debug)]
+pub struct CustomError(String);
+
+fn main() -> Result<(), CustomError> {
     let args = Cli::parse();
-    let repo_name = "brend-smits/retrieve-github-sbom-action";
-    fetch_sbom(&args.token, &repo_name).unwrap();
+
+    let path_string = &args.repo_list_path.display().to_string();
+
+    let file = File::open(&args.repo_list_path)
+        .map_err(|err| CustomError(format!("Error reading `{}`: {}", path_string, err)))?;
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
+        let content = match line {
+            Ok(l) => l,
+            Err(error) => {
+                return Err(CustomError(format!(
+                    "Error reading `{}`: {}",
+                    path_string, error
+                )));
+            }
+        };
+        fetch_sbom(&args.token, &content).unwrap();
+    }
+    Ok(())
 }
 
 #[tokio::main]
