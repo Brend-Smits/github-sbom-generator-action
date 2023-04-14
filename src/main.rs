@@ -23,11 +23,14 @@ pub struct CustomError(String);
 
 fn main() -> Result<(), CustomError> {
     let args = Cli::parse();
+    read_file_line_by_line(&args.repo_list_path.display().to_string(), &args.token)?;
+    Ok(())
+}
 
-    let path_string = &args.repo_list_path.display().to_string();
-
-    let file = File::open(&args.repo_list_path)
-        .map_err(|err| CustomError(format!("Error reading `{}`: {}", path_string, err)))?;
+// Function to read file line by line and process each line
+fn read_file_line_by_line(repo_list_path: &str, token: &str) -> Result<(), CustomError> {
+    let file = File::open(&repo_list_path)
+        .map_err(|err| CustomError(format!("Error reading `{}`: {}", repo_list_path, err)))?;
     let reader = BufReader::new(file);
     for line in reader.lines() {
         let content = match line {
@@ -35,11 +38,11 @@ fn main() -> Result<(), CustomError> {
             Err(error) => {
                 return Err(CustomError(format!(
                     "Error reading `{}`: {}",
-                    path_string, error
+                    repo_list_path, error
                 )));
             }
         };
-        fetch_sbom(&args.token, &content).unwrap();
+        fetch_sbom(&token, &content).unwrap();
     }
     Ok(())
 }
