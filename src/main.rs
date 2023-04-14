@@ -15,10 +15,14 @@ struct Cli {
     token: String,
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() {
     let args = Cli::parse();
     let repo_name = "brend-smits/retrieve-github-sbom-action";
+    fetch_sbom(&args.token, &repo_name).unwrap();
+}
+
+#[tokio::main]
+async fn fetch_sbom(token: &str, repo_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let api_url = format!(
         "https://api.github.com/repos/{}/dependency-graph/sbom",
         &repo_name
@@ -34,7 +38,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     headers.insert(
         AUTHORIZATION,
-        HeaderValue::from_str(&format!("Bearer {}", &args.token))?,
+        HeaderValue::from_str(&format!("Bearer {}", token))?,
     );
     headers.insert(
         USER_AGENT,
