@@ -1,5 +1,5 @@
-use std::fs::File;
-use std::io::{BufRead, BufReader};
+use std::fs::{self, File, OpenOptions};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 
 use clap::Parser;
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
@@ -30,6 +30,7 @@ fn main() -> Result<(), CustomError> {
     Ok(())
 }
 
+// TODO: Rename to read_file_and_process_line_by_line
 // Function to read file line by line and process each line
 fn read_file_line_by_line<F>(
     args: Cli,
@@ -37,9 +38,10 @@ fn read_file_line_by_line<F>(
     process_line: &F,
 ) -> Result<(), CustomError>
 where
-    F: Fn(&str, &str, &reqwest::Client) -> Result<(), CustomError>,
+    F: Fn(&str, &str, &reqwest::Client, &str) -> Result<(), CustomError>,
 {
     let file_path = &args.repo_list_path.display().to_string();
+    let save_path = &args.save_directory_path.display().to_string();
     let file = File::open(&file_path)
         .map_err(|err| CustomError(format!("Error reading `{}`: {}", file_path, err)))?;
     let reader = BufReader::new(file);
@@ -57,6 +59,7 @@ where
             &args.token.as_ref().unwrap_or(&"".to_owned()),
             &content,
             client,
+            &save_path,
         )?;
     }
     Ok(())
@@ -67,6 +70,7 @@ async fn fetch_sbom(
     token: &str,
     repo_name: &str,
     client: &reqwest::Client,
+    sbom_save_directory_path: &str,
 ) -> Result<(), CustomError> {
     let api_url = format!(
         "https://api.github.com/repos/{}/dependency-graph/sbom",
@@ -124,6 +128,26 @@ async fn fetch_sbom(
             )));
         }
     };
+    write_spdx_to_save_path(
+        spdx.to_string(),
+        sbom_save_directory_path,
+        repo_name.to_string(),
+    );
     println!("{:#?}", spdx.to_string());
     Ok(())
+}
+
+fn write_spdx_to_save_path(spdx: String, sbom_save_directory_path: &str, repo_name: String) {
+    let file_path = format!("{}/{}", sbom_save_directory_path, &repo_name);
+    let parts = repo_name.split("/").collect::<Vec<&str>>();
+    fs::create_dir_all(&parts[0]).expect("Could not create directory");
+
+    let f = OpenOptions::new()
+        .create(true)
+        .truncate(true)
+        .write(true)
+        .open(format!("{}.json", &file_path))
+        .expect("Unable to open file");
+    let mut f = BufWriter::new(f);
+    f.write_all(&spdx.as_bytes()).expect("Unable to write data");
 }
