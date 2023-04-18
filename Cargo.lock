@@ -344,6 +344,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "github-sbom-generator"
+version = "0.1.0"
+dependencies = [
+ "assert_cmd",
+ "assert_fs",
+ "clap",
+ "predicates",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "globset"
 version = "0.4.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -909,20 +923,6 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winreg",
-]
-
-[[package]]
-name = "retrieve-github-sbom"
-version = "0.1.0"
-dependencies = [
- "assert_cmd",
- "assert_fs",
- "clap",
- "predicates",
- "reqwest",
- "serde",
- "serde_json",
- "tokio",
 ]
 
 [[package]]

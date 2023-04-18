@@ -10,7 +10,7 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
     file.write_str("brend-smits/retrieve-github-sbom-action")?;
 
     // Act
-    let mut cmd = Command::cargo_bin("retrieve-github-sbom")?;
+    let mut cmd = Command::cargo_bin("github-sbom-generator")?;
     cmd.arg("--repo-list-path")
         .arg(file.path())
         .arg("--save-directory-path")
@@ -28,7 +28,7 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
 
 #[test]
 fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
-    let mut cmd = Command::cargo_bin("retrieve-github-sbom")?;
+    let mut cmd = Command::cargo_bin("github-sbom-generator")?;
 
     cmd.arg("--repo-list-path")
         .arg("test/file/doesnt/exist")
@@ -48,7 +48,7 @@ fn invalid_token_should_error() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
     file.write_str("brend-smits/retrieve-github-sbom-action\nbrend-smits-repo-doesnt-exist")?;
 
-    let mut cmd = Command::cargo_bin("retrieve-github-sbom")?;
+    let mut cmd = Command::cargo_bin("github-sbom-generator")?;
     cmd.arg("--repo-list-path")
         .arg(file.path())
         .arg("--save-directory-path")
@@ -69,7 +69,7 @@ fn non_existent_repo_should_log_and_continue() -> Result<(), Box<dyn std::error:
         "brend-smits/retrieve-github-sbom-action\nbrend-smits/repo-doesnt-exist\ngithub/licensed",
     )?;
 
-    let mut cmd = Command::cargo_bin("retrieve-github-sbom")?;
+    let mut cmd = Command::cargo_bin("github-sbom-generator")?;
     cmd.arg("--repo-list-path")
         .arg(file.path())
         .arg("--save-directory-path")
