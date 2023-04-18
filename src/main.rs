@@ -26,13 +26,12 @@ pub struct CustomError(String);
 fn main() -> Result<(), CustomError> {
     let args = Cli::parse();
     let client = reqwest::Client::new();
-    read_file_line_by_line(args, &client, &fetch_sbom)?;
+    read_file_and_process_line_by_line(args, &client, &fetch_sbom)?;
     Ok(())
 }
 
-// TODO: Rename to read_file_and_process_line_by_line
 // Function to read file line by line and process each line
-fn read_file_line_by_line<F>(
+fn read_file_and_process_line_by_line<F>(
     args: Cli,
     client: &reqwest::Client,
     process_line: &F,
@@ -140,7 +139,8 @@ async fn fetch_sbom(
 fn write_spdx_to_save_path(spdx: String, sbom_save_directory_path: &str, repo_name: String) {
     let file_path = format!("{}/{}", sbom_save_directory_path, &repo_name);
     let parts = repo_name.split("/").collect::<Vec<&str>>();
-    fs::create_dir_all(&parts[0]).expect("Could not create directory");
+    fs::create_dir_all(format!("{}/{}", sbom_save_directory_path, &parts[0]))
+        .expect("Could not create directory");
 
     let f = OpenOptions::new()
         .create(true)
