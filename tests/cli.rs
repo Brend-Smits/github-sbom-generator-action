@@ -20,7 +20,7 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
     cmd.assert().success().stdout(predicate::str::contains(
         "com.github.Brend-Smits/retrieve-github-sbom-action",
     ));
-    cmd.assert().failure().stdout(predicate::str::contains(
+    cmd.assert().success().stdout(predicate::str::contains(
         "Token is not set! I can only access some public repositories. Consider using a token with --token option",
     ));
     Ok(())

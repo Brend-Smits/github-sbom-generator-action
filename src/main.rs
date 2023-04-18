@@ -1,4 +1,4 @@
-use std::fs::{self, File, OpenOptions};
+use std::fs::File;
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
 use clap::Parser;
@@ -26,21 +26,21 @@ pub struct CustomError(String);
 fn main() -> Result<(), CustomError> {
     let args = Cli::parse();
     let client = reqwest::Client::new();
-    read_file_and_process_line_by_line(args, &client, &fetch_sbom)?;
+    read_file_and_process_line_by_line(&args, &client, &fetch_sbom)?;
     Ok(())
 }
 
 // Function to read file line by line and process each line
 fn read_file_and_process_line_by_line<F>(
-    args: Cli,
+    args: &Cli,
     client: &reqwest::Client,
     process_line: &F,
 ) -> Result<(), CustomError>
 where
     F: Fn(&str, &str, &reqwest::Client, &str) -> Result<(), CustomError>,
 {
-    let file_path = &args.repo_list_path.display().to_string();
-    let save_path = &args.save_directory_path.display().to_string();
+    let file_path = args.repo_list_path.display().to_string();
+    let save_path = args.save_directory_path.display().to_string();
     let file = File::open(&file_path)
         .map_err(|err| CustomError(format!("Error reading `{}`: {}", file_path, err)))?;
     let reader = BufReader::new(file);
@@ -55,7 +55,7 @@ where
             }
         };
         process_line(
-            &args.token.as_ref().unwrap_or(&"".to_owned()),
+            args.token.as_ref().unwrap_or(&"".to_owned()),
             &content,
             client,
             &save_path,
@@ -102,8 +102,11 @@ async fn fetch_sbom(
         .headers(headers)
         .send()
         .await
-        .expect("failed to get response");
-    let response_text = resp.text().await.expect("failed to get payload");
+        .map_err(|err| CustomError(format!("Failed to send request: {}", err)))?;
+    let response_text = resp
+        .text()
+        .await
+        .map_err(|err| CustomError(format!("Failed to get response body: {}", err)))?;
     if response_text.contains("API rate limit exceeded") {
         println!("Error: API rate limit exceeded");
         std::process::exit(1);
@@ -127,27 +130,26 @@ async fn fetch_sbom(
             )));
         }
     };
-    write_spdx_to_save_path(
-        spdx.to_string(),
-        sbom_save_directory_path,
-        repo_name.to_string(),
-    );
+    let sbom_save_directory_path = format!("{}/{}.json", sbom_save_directory_path, repo_name);
+    save_sbom_to_file(repo_name, &response_text, &sbom_save_directory_path)?;
     println!("{:#?}", spdx.to_string());
     Ok(())
 }
 
-fn write_spdx_to_save_path(spdx: String, sbom_save_directory_path: &str, repo_name: String) {
-    let file_path = format!("{}/{}", sbom_save_directory_path, &repo_name);
-    let parts = repo_name.split("/").collect::<Vec<&str>>();
-    fs::create_dir_all(format!("{}/{}", sbom_save_directory_path, &parts[0]))
-        .expect("Could not create directory");
-
-    let f = OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .open(format!("{}.json", &file_path))
-        .expect("Unable to open file");
-    let mut f = BufWriter::new(f);
-    f.write_all(&spdx.as_bytes()).expect("Unable to write data");
+fn save_sbom_to_file(
+    repo_name: &str,
+    spdx: &str,
+    sbom_save_directory_path: &str,
+) -> Result<(), CustomError> {
+    let mut f = File::create(sbom_save_directory_path)
+        .map_err(|err| CustomError(format!("Failed to create file: {}", err)))?;
+    let mut writer = BufWriter::new(&mut f);
+    writer
+        .write_all(spdx.as_bytes())
+        .map_err(|err| CustomError(format!("Failed to write to file: {}", err)))?;
+    println!(
+        "Saved SBOM for '{}' to: {}",
+        repo_name, sbom_save_directory_path
+    );
+    Ok(())
 }
