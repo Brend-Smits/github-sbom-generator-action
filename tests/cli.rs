@@ -14,13 +14,14 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("--repo-list-path")
         .arg(file.path())
         .arg("--save-directory-path")
-        .arg("target/tmp/");
+        .arg("target/tmp/")
+        .arg("-vvv");
 
     // Assert
-    cmd.assert().success().stdout(predicate::str::contains(
+    cmd.assert().success().stderr(predicate::str::contains(
         "com.github.Brend-Smits/retrieve-github-sbom-action",
     ));
-    cmd.assert().success().stdout(predicate::str::contains(
+    cmd.assert().success().stderr(predicate::str::contains(
         "Token is not set! I can only access some public repositories. Consider using a token with --token option",
     ));
     Ok(())
@@ -35,7 +36,8 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--save-directory-path")
         .arg("test/file/doesnt/exist")
         .arg("--token")
-        .arg("foo");
+        .arg("foo")
+        .arg("-vvv");
     cmd.assert().failure().stderr(predicate::str::contains(
         "Error reading `test/file/doesnt/exist`: No such file or directory (os error 2)",
     ));
@@ -54,8 +56,9 @@ fn invalid_token_should_error() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--save-directory-path")
         .arg("test/path/doesnt-exist")
         .arg("--token")
-        .arg("foo");
-    cmd.assert().failure().stdout(predicate::str::contains(
+        .arg("foo")
+        .arg("-vvv");
+    cmd.assert().failure().stderr(predicate::str::contains(
         "Error: Invalid Token, check token permissions and expiry date!\n",
     ));
 
@@ -73,8 +76,9 @@ fn non_existent_repo_should_log_and_continue() -> Result<(), Box<dyn std::error:
     cmd.arg("--repo-list-path")
         .arg(file.path())
         .arg("--save-directory-path")
-        .arg("target/tmp");
-    cmd.assert().success().stdout(predicate::str::contains(
+        .arg("target/tmp")
+        .arg("-vvv");
+    cmd.assert().success().stderr(predicate::str::contains(
         "Repository 'brend-smits/repo-doesnt-exist' not found",
     ));
 

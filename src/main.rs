@@ -2,6 +2,8 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
 use clap::Parser;
+use clap_verbosity_flag::Verbosity;
+use log::{info, warn};
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
 use serde_json::from_str;
 use serde_json::Value;
@@ -18,6 +20,8 @@ struct Cli {
     #[clap(short, long)]
     /// The GitHub API token for authentication.
     token: Option<String>,
+    #[clap(flatten)]
+    verbose: Verbosity,
 }
 
 #[derive(Debug)]
@@ -25,6 +29,13 @@ pub struct CustomError(String);
 
 fn main() -> Result<(), CustomError> {
     let args = Cli::parse();
+
+    env_logger::Builder::new()
+        .filter_level(args.verbose.log_level_filter())
+        .format_module_path(false)
+        .format_target(false)
+        .init();
+
     let client = reqwest::Client::new();
     read_file_and_process_line_by_line(&args, &client, &fetch_sbom)?;
     Ok(())
@@ -90,7 +101,7 @@ async fn fetch_sbom(
             HeaderValue::from_str(&format!("Bearer {}", token)).expect("Expects bearer token"),
         );
     } else {
-        println!("Token is not set! I can only access some public repositories. Consider using a token with --token option");
+        info!("Token is not set! I can only access some public repositories. Consider using a token with --token option");
     }
     headers.insert(
         USER_AGENT,
@@ -108,15 +119,15 @@ async fn fetch_sbom(
         .await
         .map_err(|err| CustomError(format!("Failed to get response body: {}", err)))?;
     if response_text.contains("API rate limit exceeded") {
-        println!("Error: API rate limit exceeded");
+        warn!("Error: API rate limit exceeded");
         std::process::exit(1);
     }
     if response_text.contains("Not Found") {
-        println!("Error: Repository '{}' not found", repo_name);
+        warn!("Error: Repository '{}' not found", repo_name);
         return Ok(());
     }
     if response_text.contains("Bad credentials") {
-        println!("Error: Invalid Token, check token permissions and expiry date!");
+        warn!("Error: Invalid Token, check token permissions and expiry date!");
         std::process::exit(1);
     }
 
@@ -135,7 +146,7 @@ async fn fetch_sbom(
         .expect("Could not create directory");
     let sbom_save_directory_path = format!("{}/{}.json", sbom_save_directory_path, repo_name);
     save_sbom_to_file(repo_name, &response_text, &sbom_save_directory_path)?;
-    println!("{:#?}", spdx.to_string());
+    info!("{:#?}", spdx.to_string());
     Ok(())
 }
 
