@@ -1,6 +1,7 @@
 use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
+use anyhow::{anyhow, Result};
 use clap::Parser;
 use clap_verbosity_flag::Verbosity;
 use log::{info, warn};
@@ -24,10 +25,7 @@ struct Cli {
     verbose: Verbosity,
 }
 
-#[derive(Debug)]
-pub struct CustomError(String);
-
-fn main() -> Result<(), CustomError> {
+fn main() -> Result<(), anyhow::Error> {
     let args = Cli::parse();
 
     env_logger::Builder::new()
@@ -46,32 +44,28 @@ fn read_file_and_process_line_by_line<F>(
     args: &Cli,
     client: &reqwest::Client,
     process_line: &F,
-) -> Result<(), CustomError>
+) -> Result<(), anyhow::Error>
 where
-    F: Fn(&str, &str, &reqwest::Client, &str) -> Result<(), CustomError>,
+    F: Fn(&str, &str, &reqwest::Client, &str) -> Result<(), anyhow::Error>,
 {
     let file_path = args.repo_list_path.display().to_string();
     let save_path = args.save_directory_path.display().to_string();
-    let file = File::open(&file_path)
-        .map_err(|err| CustomError(format!("Error reading `{}`: {}", file_path, err)))?;
+    let file =
+        File::open(&file_path).map_err(|err| anyhow!("Error reading `{}`: {}", file_path, err))?;
     let reader = BufReader::new(file);
-    for line in reader.lines() {
-        let content = match line {
-            Ok(l) => l,
-            Err(error) => {
-                return Err(CustomError(format!(
-                    "Error reading `{}`: {}",
-                    file_path, error
-                )));
-            }
-        };
+    for line in reader
+        .lines()
+        .map(|line| line.map_err(|err| anyhow!("Error reading `{}`: {}", file_path, err)))
+    {
+        let content = line?;
         process_line(
             args.token.as_ref().unwrap_or(&"".to_owned()),
             &content,
             client,
             &save_path,
-        )?;
+        )?
     }
+
     Ok(())
 }
 
@@ -81,7 +75,7 @@ async fn fetch_sbom(
     repo_name: &str,
     client: &reqwest::Client,
     sbom_save_directory_path: &str,
-) -> Result<(), CustomError> {
+) -> Result<(), anyhow::Error> {
     let api_url = format!(
         "https://api.github.com/repos/{}/dependency-graph/sbom",
         &repo_name
@@ -113,11 +107,11 @@ async fn fetch_sbom(
         .headers(headers)
         .send()
         .await
-        .map_err(|err| CustomError(format!("Failed to send request: {}", err)))?;
+        .map_err(|err| anyhow!("Failed to send request: {}", err))?;
     let response_text = resp
         .text()
         .await
-        .map_err(|err| CustomError(format!("Failed to get response body: {}", err)))?;
+        .map_err(|err| anyhow!("Failed to get response body: {}", err))?;
     if response_text.contains("API rate limit exceeded") {
         warn!("Error: API rate limit exceeded");
         std::process::exit(1);
@@ -132,18 +126,11 @@ async fn fetch_sbom(
     }
 
     // Parse the response body as JSON into a SPDX struct
-    let spdx: Value = match from_str(&response_text) {
-        Ok(spdx) => spdx,
-        Err(err) => {
-            return Err(CustomError(format!(
-                "Failed to parse JSON response: {}",
-                err
-            )));
-        }
-    };
+    let spdx: Value = from_str(&response_text)
+        .map_err(|err| anyhow!("Failed to parse JSON response: {}", err))?;
     let parts = repo_name.split('/').collect::<Vec<&str>>();
     fs::create_dir_all(format!("{}/{}", sbom_save_directory_path, &parts[0]))
-        .expect("Could not create directory");
+        .map_err(|err| anyhow!("Could not create directory: {}", err))?;
     let sbom_save_directory_path = format!("{}/{}.json", sbom_save_directory_path, repo_name);
     save_sbom_to_file(repo_name, &response_text, &sbom_save_directory_path)?;
     info!("{:#?}", spdx.to_string());
@@ -154,13 +141,13 @@ fn save_sbom_to_file(
     repo_name: &str,
     spdx: &str,
     sbom_save_directory_path: &str,
-) -> Result<(), CustomError> {
+) -> Result<(), anyhow::Error> {
     let mut f = File::create(sbom_save_directory_path)
-        .map_err(|err| CustomError(format!("Failed to create file: {}", err)))?;
+        .map_err(|err| anyhow!("Failed to create file: {}", err))?;
     let mut writer = BufWriter::new(&mut f);
     writer
         .write_all(spdx.as_bytes())
-        .map_err(|err| CustomError(format!("Failed to write to file: {}", err)))?;
+        .map_err(|err| anyhow!("Failed to write to file: {}", err))?;
     println!(
         "Saved SBOM for '{}' to: {}",
         repo_name, sbom_save_directory_path
