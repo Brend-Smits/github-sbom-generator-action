@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
 use clap::Parser;
@@ -130,6 +130,9 @@ async fn fetch_sbom(
             )));
         }
     };
+    let parts = repo_name.split('/').collect::<Vec<&str>>();
+    fs::create_dir_all(format!("{}/{}", sbom_save_directory_path, &parts[0]))
+        .expect("Could not create directory");
     let sbom_save_directory_path = format!("{}/{}.json", sbom_save_directory_path, repo_name);
     save_sbom_to_file(repo_name, &response_text, &sbom_save_directory_path)?;
     println!("{:#?}", spdx.to_string());
