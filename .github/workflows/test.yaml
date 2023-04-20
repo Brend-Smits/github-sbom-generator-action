@@ -7,8 +7,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # - run: ls -all .github/lib
-
     - name: Run Retrieve SBOM Action
       uses: ./
       with:
