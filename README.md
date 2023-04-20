@@ -1,16 +1,23 @@
-# Retrieve GitHub SBOM(s) Action
+# GitHub SBOM(s) Generator Action
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Retrieve GitHub SBOMs is a GitHub Actions composite action that retrieves Software Bill of Materials (SBOMs) for one or multiple repositories from GitHub's Dependency Graph API and saves them to a specified directory.
+This GitHub Action and/or standalone CLI application generates a Software Bill of Materials (SBOM) for a given GitHub repository or a list of repositories, using the GitHub Dependency Graph API.
+The Software Bill of Materials that is generated based on the SPDX specification and is saved in JSON format.
+The GitHub Action is a composite action that you can easily integrate in your existing workflows.
 
 ## Usage
+
+There are two ways to use this repository. One way is to use it as a composite GitHub action, the other is to use it as a standalone commandline application.
+Both ways are explained below.
+
+### Usage GitHub Action
 
 To use this composite action in your workflow, you can include the following step in your workflow YAML file:
 
 ```yaml
-- name: Retrieve GitHub SBOMs
-  uses: brend-smits/retrieve-github-sbom-action@<tag-or-branch>
+- name: Generate GitHub SBOMs
+  uses: brend-smits/github-sbom-generator-action@<tag-or-branch>
   with:
     repo_list_path: <path-to-repo-list-file>
     save_directory_path: <path-to-save-directory>
@@ -27,7 +34,7 @@ The composite action requires the following input:
 
 The composite action produces no outputs.
 
-## Example
+#### Example
 
 Here's an example of how you can use the composite action in your workflow:
 
@@ -63,9 +70,13 @@ jobs:
 
 This workflow retrieves SBOMs for repositories listed in the `gh-repos.txt` file and saves them to a `sboms` directory.
 
+## Usage CLI Application
+
+Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) on how to build and run the application locally. There is currently no binary that is distributed yet.
+
 ## Usecases
 
-Having the ability to retrieve all SBOMs from an organization in e.g. a central repository allows you to do all sorts of fun things like:
+Having the ability to retrieve (all) SBOM(s) from an organization in e.g. a central repository allows you to do all sorts of fun things like:
     - License checking
     - Metrics
     - Security checks
@@ -75,4 +86,4 @@ Having the ability to retrieve all SBOMs from an organization in e.g. a central 
 
 > :warning: Experimental!
 
-This action is new and still undergoing testing. Feel free to give it a try and give suggestions or feedback by creating a new GitHub Issue.
+This application/action is new and still undergoing testing. Feel free to give it a try and give suggestions or feedback by creating a new GitHub Issue.

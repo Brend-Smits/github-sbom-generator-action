@@ -1,0 +1,20 @@
+[package]
+name = "github-sbom-generator"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.70"
+assert_cmd = "2.0.11"
+assert_fs = "1.0.13"
+clap = { version = "4.2.2", features = ["derive"] }
+clap-verbosity-flag = "2.0.1"
+env_logger = "0.10.0"
+log = "0.4.17"
+predicates = "3.0.3"
+reqwest = { version = "0.11", features = ["json"] }
+serde = "1.0.160"
+serde_json = "1.0.96"
+tokio = { version = "1", features = ["full"] }
