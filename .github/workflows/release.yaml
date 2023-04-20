@@ -1,0 +1,46 @@
+name: Attach binaries, sbom and provenance to releases
+on:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+*
+jobs:
+  attach:
+    name: Attach binaries, sbom and provenance to releases
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # ratchet:actions/checkout@v3
+      - uses: actions-rs/toolchain@16499b5e05bf2e26879000db0c1d13f7e13fa3af # ratchet:actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Build release
+        run: cargo build --release --locked
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@7319e4733ec7a184d739a6f412c40ffc339b69c7 # ratchet:svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          file: target/release/github-sbom-generator
+          tag: ${{ github.ref }}
+          overwrite: true
+          asset_name: github-sbom-generator
+      - name: Generate provenance
+        uses: philips-labs/slsa-provenance-action@752766b8a3b1ebd09d599e163eeec8fa39e677aa # ratchet:philips-labs/slsa-provenance-action@v0.8.0
+        with:
+          command: generate
+          subcommand: files
+          arguments: --artifact-path target/release/github-sbom-generator --output-path provenance.json
+      - name: Upload provenance to release
+        uses: svenstaro/upload-release-action@7319e4733ec7a184d739a6f412c40ffc339b69c7 # ratchet:svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          file: provenance.json
+          tag: ${{ github.ref }}
+          overwrite: true
+          asset_name: slsa-provenance.json
+      - uses: anchore/sbom-action@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action@v0.14.1
+        with:
+          artifact-name: sbom.spdx.json
+      - name: publish SBOM assets
+        uses: anchore/sbom-action/publish-sbom@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action/publish-sbom@v0.14.1
+        with:
+          sbom-artifact-match: ".*\\.spdx\\.json$"
