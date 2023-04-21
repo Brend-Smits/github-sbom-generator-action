@@ -22,7 +22,9 @@ runs:
   steps:
     - name: Run Action
       shell: bash
-      run: |
-        curl -L https://github.com/Brend-Smits/retrieve-github-sbom-action/releases/download/v0.1.0/github-sbom-generator > github-sbom-generator
+      run: | #x-release-please-start-version
+        version=v0.1.0 
+        curl -L https://github.com/Brend-Smits/retrieve-github-sbom-action/releases/download/$version/github-sbom-generator > github-sbom-generator
         chmod +x ${{ github.action_path }}/github-sbom-generator
         /${{ github.action_path }}/github-sbom-generator --repo-list-path "${{ inputs.repo_list_path }}" --save-directory-path "${{ inputs.save_directory_path }}" --token ${{ inputs.github_token }}
+      #x-release-please-end
