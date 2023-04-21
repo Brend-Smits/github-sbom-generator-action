@@ -77,10 +77,10 @@ Please refer to [CONTRIBUTING.md](./CONTRIBUTING.md) on how to build and run the
 ## Usecases
 
 Having the ability to retrieve (all) SBOM(s) from an organization in e.g. a central repository allows you to do all sorts of fun things like:
-    - License checking
-    - Metrics
-    - Security checks
-    - Compliancy checks with [Continuous Compliance](https://github.com/philips-labs/continuous-compliance-action)
+- License checking
+- Metrics
+- Security checks
+- Compliancy checks with [Continuous Compliance](https://github.com/philips-labs/continuous-compliance-action)
 
 ## State
 
