@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/Brend-Smits/github-sbom-generator-action/compare/v1.0.1...v1.0.2) (2023-04-21)
+
+
+### Bug Fixes
+
+* change curl output to include action_path ([1618108](https://github.com/Brend-Smits/github-sbom-generator-action/commit/16181083d523d338e8394f4cd84e0ec81dcd1c69))
+
 ## [1.0.1](https://github.com/Brend-Smits/retrieve-github-sbom-action/compare/v1.0.0...v1.0.1) (2023-04-21)
 
 
