@@ -40,7 +40,9 @@ jobs:
       - uses: anchore/sbom-action@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action@v0.14.1
         with:
           artifact-name: sbom.spdx.json
+          github-token: ${{ secrets.RELEASE_TOKEN }}
       - name: publish SBOM assets
         uses: anchore/sbom-action/publish-sbom@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action/publish-sbom@v0.14.1
         with:
           sbom-artifact-match: ".*\\.spdx\\.json$"
+          github-token: ${{ secrets.RELEASE_TOKEN }}
