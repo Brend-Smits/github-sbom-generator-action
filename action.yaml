@@ -20,13 +20,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Debug Versions
-      shell: bash
-      run: |
-       echo "REF: ${GITHUB_REF}"
-       echo "Ref name: ${{github.ref_name}}"
-       echo "Release version: ${GITHUB_REF#refs/*/}"
-       echo `git tag: $(git describe --tags --abbrev=0)`
     - name: Run Action
       shell: bash
       run: |
