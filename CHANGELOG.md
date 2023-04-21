@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/Brend-Smits/retrieve-github-sbom-action/compare/v1.0.0...v1.0.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* give actions the proper credentials to upload binaries ([a361b57](https://github.com/Brend-Smits/retrieve-github-sbom-action/commit/a361b5714fdcf9eff4fe4098d9071c0229c9b600))
+
 ## [1.0.0](https://github.com/Brend-Smits/retrieve-github-sbom-action/compare/v0.1.0...v1.0.0) (2023-04-21)
 
 
