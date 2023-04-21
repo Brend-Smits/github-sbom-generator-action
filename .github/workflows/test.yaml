@@ -7,12 +7,10 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    # - run: ls -all .github/lib
-
     - name: Run Retrieve SBOM Action
       uses: ./
       with:
         repo_list_path: .github/lib/gh-data.txt
         github_token: ${{ secrets.GITHUB_TOKEN }}
         debug: true
-        save_directory_path: .github/lib/test-output/
+        save_directory_path: .github/lib/test-output

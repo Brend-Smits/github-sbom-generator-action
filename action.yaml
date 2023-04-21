@@ -23,5 +23,6 @@ runs:
     - name: Run Action
       shell: bash
       run: |
-        chmod +x ${{ github.action_path }}/get-sboms.sh
-        sh ${{ github.action_path }}/get-sboms.sh -r "${{ inputs.repo_list_path }}" -f "${{ inputs.save_directory_path }}" -t ${{ inputs.github_token }}
+        curl -L https://github.com/Brend-Smits/retrieve-github-sbom-action/releases/download/v0.1.0/github-sbom-generator > github-sbom-generator
+        chmod +x ${{ github.action_path }}/github-sbom-generator
+        /${{ github.action_path }}/github-sbom-generator --repo-list-path "${{ inputs.repo_list_path }}" --save-directory-path "${{ inputs.save_directory_path }}" --token ${{ inputs.github_token }}
