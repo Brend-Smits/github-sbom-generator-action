@@ -44,7 +44,23 @@ fn main() -> Result<(), anyhow::Error> {
         .init();
 
     let client = reqwest::Client::new();
-    read_file_and_process_line_by_line(&args, &client, &fetch_sbom)?;
+    match args {
+        Cli {
+            repo_list_path: Some(_),
+            ..
+        } => read_file_and_process_line_by_line(&args, &client, &fetch_sbom),
+        Cli {
+            repository: Some(p),
+            ..
+        } => fetch_sbom(
+            args.token.as_ref().unwrap_or(&"".to_owned()),
+            &p,
+            &client,
+            &args.save_directory_path.display().to_string(),
+        ),
+        _ => Err(anyhow::anyhow!("Repository name not specified")),
+    }?;
+
     Ok(())
 }
 
