@@ -55,7 +55,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Retrieve GitHub SBOMs
-      uses: brend-smits/retrieve-github-sbom-action@main
+      uses: brend-smits/retrieve-github-sbom-action@v0.1.0
       with:
         repo_list_path: gh-repos.txt
         save_directory_path: sboms

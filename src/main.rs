@@ -11,6 +11,7 @@ use serde_json::Value;
 
 /// Retrieve GitHub SBOMs is a GitHub Actions composite action that retrieves Software Bill of Materials (SBOMs) for one or multiple repositories from GitHub's Dependency Graph API and saves them to a specified directory.
 #[derive(Parser)]
+#[command(author, version, about, long_about = None)]
 struct Cli {
     #[clap(short, long)]
     /// The path to a file containing a list of repository names to retrieve SBOMs for.
