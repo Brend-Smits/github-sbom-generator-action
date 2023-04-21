@@ -374,7 +374,7 @@ dependencies = [
 
 [[package]]
 name = "github-sbom-generator"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "anyhow",
  "assert_cmd",
