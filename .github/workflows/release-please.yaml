@@ -9,5 +9,5 @@ jobs:
     steps:
       - uses: google-github-actions/release-please-action@c078ea33917ab8cfa5300e48f4b7e6b16606aede # ratchet:google-github-actions/release-please-action@v3
         with:
-          release-type: manifest
+          command: manifest
           token: ${{ secrets.RELEASE_TOKEN }}
