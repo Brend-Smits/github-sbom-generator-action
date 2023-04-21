@@ -7,7 +7,7 @@ use std::process::Command;
 fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
     // Arrange
     let file = assert_fs::NamedTempFile::new("repos.txt")?;
-    file.write_str("brend-smits/retrieve-github-sbom-action")?;
+    file.write_str("brend-smits/github-sbom-generator-action")?;
 
     // Act
     let mut cmd = Command::cargo_bin("github-sbom-generator")?;
@@ -19,7 +19,7 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
 
     // Assert
     cmd.assert().success().stderr(predicate::str::contains(
-        "com.github.Brend-Smits/retrieve-github-sbom-action",
+        "com.github.Brend-Smits/github-sbom-generator-action",
     ));
     cmd.assert().success().stderr(predicate::str::contains(
         "Token is not set! I can only access some public repositories. Consider using a token with --token option",

@@ -1,1 +1,1 @@
-brend-smits/retrieve-github-sboms
+brend-smits/github-sbom-generator-action
