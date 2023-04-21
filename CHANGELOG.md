@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/Brend-Smits/github-sbom-generator-action/compare/v1.0.2...v1.0.3) (2023-04-21)
+
+
+### Bug Fixes
+
+* create directory if it does not exist yet ([48485fc](https://github.com/Brend-Smits/github-sbom-generator-action/commit/48485fc6471072ef9d9c0e997112b5b5e5f8d03f))
+
 ## [1.0.2](https://github.com/Brend-Smits/github-sbom-generator-action/compare/v1.0.1...v1.0.2) (2023-04-21)
 
 
