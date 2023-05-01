@@ -2,7 +2,7 @@ use std::fs::{self, File};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 
 use anyhow::{anyhow, Result};
-use clap::Parser;
+use clap::{ArgGroup, Parser};
 use clap_verbosity_flag::Verbosity;
 use log::{info, warn};
 use reqwest::header::{HeaderMap, HeaderValue, ACCEPT, AUTHORIZATION, USER_AGENT};
@@ -12,10 +12,18 @@ use serde_json::Value;
 /// Retrieve GitHub SBOMs is a GitHub Actions composite action that retrieves Software Bill of Materials (SBOMs) for one or multiple repositories from GitHub's Dependency Graph API and saves them to a specified directory.
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
+#[clap(group(
+    ArgGroup::new("repo-group")
+        .required(true)
+        .args(&["repo_list_path", "repository"]),
+))]
 struct Cli {
-    #[clap(short, long)]
+    #[clap(short('l'), long)]
     /// The path to a file containing a list of repository names to retrieve SBOMs for.
-    repo_list_path: std::path::PathBuf,
+    repo_list_path: Option<std::path::PathBuf>,
+    #[clap(short, long)]
+    /// The repository owner/repo-name to retrieve SBOM from.
+    repository: Option<String>,
     #[clap(short, long)]
     /// The path to the directory where the retrieved SBOMs will be saved.
     save_directory_path: std::path::PathBuf,
@@ -36,7 +44,23 @@ fn main() -> Result<(), anyhow::Error> {
         .init();
 
     let client = reqwest::Client::new();
-    read_file_and_process_line_by_line(&args, &client, &fetch_sbom)?;
+    match args {
+        Cli {
+            repo_list_path: Some(_),
+            ..
+        } => read_file_and_process_line_by_line(&args, &client, &fetch_sbom),
+        Cli {
+            repository: Some(p),
+            ..
+        } => fetch_sbom(
+            args.token.as_ref().unwrap_or(&"".to_owned()),
+            &p,
+            &client,
+            &args.save_directory_path.display().to_string(),
+        ),
+        _ => Err(anyhow::anyhow!("Repository name not specified")),
+    }?;
+
     Ok(())
 }
 
@@ -49,7 +73,12 @@ fn read_file_and_process_line_by_line<F>(
 where
     F: Fn(&str, &str, &reqwest::Client, &str) -> Result<(), anyhow::Error>,
 {
-    let file_path = args.repo_list_path.display().to_string();
+    let file_path = args
+        .repo_list_path
+        .as_ref()
+        .expect("Expeced repository list Path")
+        .display()
+        .to_string();
     let save_path = args.save_directory_path.display().to_string();
     let file =
         File::open(&file_path).map_err(|err| anyhow!("Error reading `{}`: {}", file_path, err))?;

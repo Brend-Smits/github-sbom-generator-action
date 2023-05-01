@@ -11,8 +11,8 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
 
     // Act
     let mut cmd = Command::cargo_bin("github-sbom-generator")?;
-    cmd.arg("--repo-list-path")
-        .arg(file.path())
+    cmd.arg("-r")
+        .arg("Brend-Smits/github-sbom-generator-action")
         .arg("--save-directory-path")
         .arg("target/tmp/")
         .arg("-vvv");
@@ -24,6 +24,22 @@ fn retrieves_sbom_from_github() -> Result<(), Box<dyn std::error::Error>> {
     cmd.assert().success().stderr(predicate::str::contains(
         "Token is not set! I can only access some public repositories. Consider using a token with --token option",
     ));
+
+    // Act
+    let mut cmd2 = Command::cargo_bin("github-sbom-generator")?;
+    cmd2.arg("--repo-list-path")
+        .arg(file.path())
+        .arg("--save-directory-path")
+        .arg("target/tmp/")
+        .arg("-vvv");
+
+    // Assert
+    cmd2.assert().success().stderr(predicate::str::contains(
+        "com.github.Brend-Smits/github-sbom-generator-action",
+    ));
+    cmd2.assert().success().stderr(predicate::str::contains(
+            "Token is not set! I can only access some public repositories. Consider using a token with --token option",
+        ));
     Ok(())
 }
 
