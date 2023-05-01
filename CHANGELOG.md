@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/Brend-Smits/github-sbom-generator-action/compare/v1.0.3...v1.1.0) (2023-05-01)
+
+
+### Features
+
+* add repository argument ([5940d0b](https://github.com/Brend-Smits/github-sbom-generator-action/commit/5940d0ba814e6d8bfb4fdc71915e77bfbf723d6d))
+
+
+### Bug Fixes
+
+* failing tests due to repo name change ([8535cf1](https://github.com/Brend-Smits/github-sbom-generator-action/commit/8535cf1dcaf668a88df9ead5748458e17d3f3c21))
+
 ## [1.0.3](https://github.com/Brend-Smits/github-sbom-generator-action/compare/v1.0.2...v1.0.3) (2023-04-21)
 
 
