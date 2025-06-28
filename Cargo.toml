@@ -15,6 +15,6 @@ env_logger = "0.10.0"
 log = "0.4.17"
 predicates = "3.0.3"
 reqwest = { version = "0.11", features = ["json"] }
-serde = "1.0.160"
+serde = "1.0.185"
 serde_json = "1.0.96"
 tokio = { version = "1", features = ["full"] }
