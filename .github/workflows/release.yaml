@@ -37,12 +37,12 @@ jobs:
           tag: ${{ github.ref }}
           overwrite: true
           asset_name: slsa-provenance.json
-      - uses: anchore/sbom-action@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action@v0.14.1
+      - uses: anchore/sbom-action@9246b90769f852b3a8921f330c59e0b3f439d6e9 # ratchet:anchore/sbom-action@v0.20.1
         with:
           artifact-name: sbom.spdx.json
           github-token: ${{ secrets.RELEASE_TOKEN }}
       - name: publish SBOM assets
-        uses: anchore/sbom-action/publish-sbom@422cb34a0f8b599678c41b21163ea6088edb2624 # ratchet:anchore/sbom-action/publish-sbom@v0.14.1
+        uses: anchore/sbom-action/publish-sbom@9246b90769f852b3a8921f330c59e0b3f439d6e9 # ratchet:anchore/sbom-action/publish-sbom@v0.20.1
         with:
           sbom-artifact-match: ".*\\.spdx\\.json$"
           github-token: ${{ secrets.RELEASE_TOKEN }}
