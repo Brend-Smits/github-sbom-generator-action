@@ -16,7 +16,7 @@ jobs:
       - name: Build release
         run: cargo build --release --locked
       - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@7319e4733ec7a184d739a6f412c40ffc339b69c7 # ratchet:svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@5e35e583720436a2cc5f9682b6f55657101c1ea1 # ratchet:svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: target/release/github-sbom-generator
@@ -30,7 +30,7 @@ jobs:
           subcommand: files
           arguments: --artifact-path target/release/github-sbom-generator --output-path provenance.json
       - name: Upload provenance to release
-        uses: svenstaro/upload-release-action@7319e4733ec7a184d739a6f412c40ffc339b69c7 # ratchet:svenstaro/upload-release-action@v2
+        uses: svenstaro/upload-release-action@5e35e583720436a2cc5f9682b6f55657101c1ea1 # ratchet:svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
           file: provenance.json
